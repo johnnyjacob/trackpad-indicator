@@ -4,14 +4,9 @@ import sys
 import gtk
 import appindicator
 
-import imaplib
-import re
-
-PING_FREQUENCY = 10 # seconds
-
-class CheckGMail:
+class Trackpad:
     def __init__(self):
-        self.ind = appindicator.Indicator("new-gmail-indicator",
+        self.ind = appindicator.Indicator("trackpad-status-indicator",
                                            "indicator-messages",
                                            appindicator.CATEGORY_APPLICATION_STATUS)
         self.ind.set_status(appindicator.STATUS_ACTIVE)
@@ -29,31 +24,19 @@ class CheckGMail:
         self.menu.append(self.quit_item)
 
     def main(self):
-        self.check_mail()
-        gtk.timeout_add(PING_FREQUENCY * 1000, self.check_mail)
+        self.check_trackpad_status()
         gtk.main()
 
     def quit(self, widget):
         sys.exit(0)
 
-    def check_mail(self):
-        messages, unread = self.gmail_checker('myaddress@gmail.com','mypassword')
-        if unread > 0:
+    def check_trackpad_status(self):
+        trackpad_enabled = True
+        if trackpad_enabled:
             self.ind.set_status(appindicator.STATUS_ATTENTION)
         else:
             self.ind.set_status(appindicator.STATUS_ACTIVE)
         return True
-
-    def gmail_checker(self, username, password):
-        i = imaplib.IMAP4_SSL('imap.gmail.com')
-        try:
-            i.login(username, password)
-            x, y = i.status('INBOX', '(MESSAGES UNSEEN)')
-            messages = int(re.search('MESSAGES\s+(\d+)', y[0]).group(1))
-            unseen = int(re.search('UNSEEN\s+(\d+)', y[0]).group(1))
-            return (messages, unseen)
-        except:
-            return False, 0
 
 if __name__ == "__main__":
     indicator = CheckGMail()
