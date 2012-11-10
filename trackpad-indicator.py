@@ -44,6 +44,11 @@ class Trackpad:
         self.quit_item.show()
         self.menu.append(self.quit_item)
 
+        self.tpad_item = gtk.MenuItem("Trackpad off")
+        self.tpad_item.connect("activate", self.quit)
+        self.tpad_item.show()
+        self.menu.append(self.tpad_item)
+
     def main(self):
         self.check_trackpad_status()
         gtk.main()
@@ -52,13 +57,34 @@ class Trackpad:
         sys.exit(0)
 
     def check_trackpad_status(self):
-        trackpad_enabled = True
+        trackpad_enabled = False
         if trackpad_enabled:
             self.ind.set_status(appindicator.STATUS_ATTENTION)
         else:
             self.ind.set_status(appindicator.STATUS_ACTIVE)
         return True
 
+    def touchpad_on(deviceid, state):
+        state_value = "0"
+        if state == "on":
+            state_value = "1"
+
+        command = "xinput set-prop " + deviceid + " \"Device Enabled\" " + state_value
+        print command
+        commands.getoutput(command)
+
+    def get_touchpad_deviceid():
+        xinputresult = commands.getoutput('xinput')
+        xinputlist = xinputresult.split('\n')
+
+        #Parse and look for touchpad's device id
+        for line in xinputlist:
+            if re.search("TouchPad",line) :
+                for id in re.findall(r'id=\d+\b',line):
+                    idlist = re.findall(r'\d+', id)
+                    touchpad_id = idlist[0]
+                    return touchpad_id
+
 if __name__ == "__main__":
-    indicator = CheckGMail()
+    indicator = Trackpad()
     indicator.main()
