@@ -26,7 +26,7 @@ import re
 
 #Get the device id for touchpad
 class xinput:
-    def xinput_set_device_state(self, deviceid, state):
+    def set_device_state(self, deviceid, state):
         state_value = "0"
         if state == "on":
             state_value = "1"
@@ -35,7 +35,7 @@ class xinput:
         print command
         commands.getoutput(command)
 
-    def xinput_get_deviceid(self, device):
+    def get_deviceid(self, device):
         xinputresult = commands.getoutput('xinput')
         xinputlist = xinputresult.split('\n')
 
@@ -47,8 +47,8 @@ class xinput:
                     touchpad_id = idlist[0]
         return touchpad_id
 
-    def xinput_get_enabled_status(self, device):
-        deviceid = self.xinput_get_deviceid(device)
+    def get_enabled_status(self, device):
+        deviceid = self.get_deviceid(device)
         command = "xinput list-props " + deviceid
         command_output = commands.getoutput(command)
         device_properties = command_output.split('\n')
@@ -64,8 +64,8 @@ class xinput:
         return "on"
 
 input_manager = xinput()
-deviceid = input_manager.xinput_get_deviceid ("TouchPad")
-#input_manager.xinput_set_device_state (deviceid, "off")
-status = input_manager.xinput_get_enabled_status ("TouchPad")
+deviceid = input_manager.get_deviceid ("TouchPad")
+#input_manager.set_device_state (deviceid, "off")
+status = input_manager.get_enabled_status ("TouchPad")
 print status
 
