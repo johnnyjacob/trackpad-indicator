@@ -51,7 +51,6 @@ class Trackpad:
         self.quit_item.show()
         self.menu.append(self.quit_item)
 
-
     def main(self):
         self.check_trackpad_status()
         gtk.main()
@@ -63,13 +62,19 @@ class Trackpad:
         status = self.input_manager.get_enabled_status ("TouchPad")
         if status == "off":
             self.ind.set_status(appindicator.STATUS_ATTENTION)
+            self.tpad_item.set_label("TouchPad on")
         else:
             self.ind.set_status(appindicator.STATUS_ACTIVE)
+            self.tpad_item.set_label("TouchPad off")
 
         return True
 
-    def touchpad_on(deviceid, state):
-        self.input_manager.set_device_state(0, 1)
+    def touchpad_on(state):
+        self.input_manager.set_device_state("TouchPad", "1")
+
+    def touchpad_off(state):
+        self.input_manager.set_device_state("TouchPad", "0")
+
 
     def get_touchpad_deviceid():
         xinputresult = commands.getoutput('xinput')

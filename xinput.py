@@ -30,12 +30,10 @@ class xinput:
         self.device_id = ""
         self.device_state = ""
 
-    def set_device_state(self, deviceid, state):
-        state_value = "0"
-        if state == "on":
-            state_value = "1"
+    def set_device_state(self, device, state):
+        self.device_id = get_deviceid (device)
 
-        command = "xinput set-prop " + deviceid + " \"Device Enabled\" " + state_value
+        command = "xinput set-prop " + self.device_id + " \"Device Enabled\" " + state_value
         commands.getoutput(command)
 
     def get_deviceid(self, device):
