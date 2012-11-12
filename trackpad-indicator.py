@@ -24,9 +24,11 @@
 import sys
 import gtk
 import appindicator
+import xinput
 
 class Trackpad:
     def __init__(self):
+        self.input_manager = xinput.xinput()
         self.ind = appindicator.Indicator("trackpad-status-indicator",
                                            "indicator-messages",
                                            appindicator.CATEGORY_APPLICATION_STATUS)
@@ -39,15 +41,16 @@ class Trackpad:
     def menu_setup(self):
         self.menu = gtk.Menu()
 
+        self.tpad_item = gtk.MenuItem("Trackpad off")
+        self.tpad_item.connect("activate", self.quit)
+        self.tpad_item.show()
+        self.menu.append(self.tpad_item)
+
         self.quit_item = gtk.MenuItem("Quit")
         self.quit_item.connect("activate", self.quit)
         self.quit_item.show()
         self.menu.append(self.quit_item)
 
-        self.tpad_item = gtk.MenuItem("Trackpad off")
-        self.tpad_item.connect("activate", self.quit)
-        self.tpad_item.show()
-        self.menu.append(self.tpad_item)
 
     def main(self):
         self.check_trackpad_status()
@@ -57,21 +60,16 @@ class Trackpad:
         sys.exit(0)
 
     def check_trackpad_status(self):
-        trackpad_enabled = False
-        if trackpad_enabled:
+        status = self.input_manager.get_enabled_status ("TouchPad")
+        if status == "off":
             self.ind.set_status(appindicator.STATUS_ATTENTION)
         else:
             self.ind.set_status(appindicator.STATUS_ACTIVE)
+
         return True
 
     def touchpad_on(deviceid, state):
-        state_value = "0"
-        if state == "on":
-            state_value = "1"
-
-        command = "xinput set-prop " + deviceid + " \"Device Enabled\" " + state_value
-        print command
-        commands.getoutput(command)
+        self.input_manager.set_device_state(0, 1)
 
     def get_touchpad_deviceid():
         xinputresult = commands.getoutput('xinput')
