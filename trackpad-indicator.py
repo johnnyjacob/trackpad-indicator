@@ -46,11 +46,6 @@ class Trackpad:
         self.tpad_item.show()
         self.menu.append(self.tpad_item)
 
-        self.quit_item = gtk.MenuItem("Quit")
-        self.quit_item.connect("activate", self.quit)
-        self.quit_item.show()
-        self.menu.append(self.quit_item)
-
     def set_touchpad_status (self, widget):
         status = self.input_manager.get_enabled_status ("TouchPad")
         if status == "off":
@@ -65,9 +60,6 @@ class Trackpad:
     def main(self):
         self.check_touchpad_status()
         gtk.main()
-
-    def quit(self, widget):
-        sys.exit(0)
 
     def check_touchpad_status(self):
         status = self.input_manager.get_enabled_status ("TouchPad")
