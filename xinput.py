@@ -30,12 +30,6 @@ class xinput:
         self.device_id = ""
         self.device_state = ""
 
-    def set_device_state(self, device, state):
-        self.device_id = get_deviceid (device)
-
-        command = "xinput set-prop " + self.device_id + " \"Device Enabled\" " + state_value
-        commands.getoutput(command)
-
     def get_deviceid(self, device):
         xinputresult = commands.getoutput('xinput')
         xinputlist = xinputresult.split('\n')
@@ -48,6 +42,12 @@ class xinput:
                     self.device_id = idlist[0]
 
         return self.device_id
+
+    def set_device_state(self, device, state):
+        self.device_id = self.get_deviceid (device)
+
+        command = "xinput set-prop " + self.device_id + " \"Device Enabled\" " + state
+        commands.getoutput(command)
 
     def get_enabled_status(self, device):
         deviceid = self.get_deviceid(device)

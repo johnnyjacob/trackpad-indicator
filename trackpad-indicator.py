@@ -24,16 +24,16 @@
 import sys
 import gtk
 import appindicator
-import xinput
+from xinput import xinput
 
 class Trackpad:
     def __init__(self):
-        self.input_manager = xinput.xinput()
+        self.input_manager = xinput()
         self.ind = appindicator.Indicator("trackpad-status-indicator",
-                                           "indicator-messages",
+                                           "touchpad-active",
                                            appindicator.CATEGORY_APPLICATION_STATUS)
         self.ind.set_status(appindicator.STATUS_ACTIVE)
-        self.ind.set_attention_icon("new-messages-red")
+        self.ind.set_attention_icon("touchpad-disabled")
 
         self.menu_setup()
         self.ind.set_menu(self.menu)
@@ -41,8 +41,8 @@ class Trackpad:
     def menu_setup(self):
         self.menu = gtk.Menu()
 
-        self.tpad_item = gtk.MenuItem("Trackpad off")
-        self.tpad_item.connect("activate", self.quit)
+        self.tpad_item = gtk.MenuItem("TouchPad Off")
+        self.tpad_item.connect("activate", self.set_touchpad_status)
         self.tpad_item.show()
         self.menu.append(self.tpad_item)
 
@@ -51,14 +51,25 @@ class Trackpad:
         self.quit_item.show()
         self.menu.append(self.quit_item)
 
+    def set_touchpad_status (self, widget):
+        status = self.input_manager.get_enabled_status ("TouchPad")
+        if status == "off":
+            self.ind.set_status(appindicator.STATUS_ACTIVE)
+            self.input_manager.set_device_state ("TouchPad", "1")
+            self.tpad_item.set_label("TouchPad off")
+        else:
+            self.ind.set_status(appindicator.STATUS_ATTENTION)
+            self.input_manager.set_device_state ("TouchPad", "0")
+            self.tpad_item.set_label("TouchPad on")
+        
     def main(self):
-        self.check_trackpad_status()
+        self.check_touchpad_status()
         gtk.main()
 
     def quit(self, widget):
         sys.exit(0)
 
-    def check_trackpad_status(self):
+    def check_touchpad_status(self):
         status = self.input_manager.get_enabled_status ("TouchPad")
         if status == "off":
             self.ind.set_status(appindicator.STATUS_ATTENTION)
